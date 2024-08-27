@@ -98,7 +98,7 @@ contract CrossChainPaymentProcessor is OwnerIsCreator {
         external
         onlyOwner
         onlyAllowlistedChain(subscription.preferredBlockchain)
-        validateReceiver(address(this))
+        validateReceiver(subscription.serviceProvider)
         returns (bytes32 messageId)
     {
         address _token = 0x5fd84259d66Cd46123540766Be93DFE6D43130D7; // USDC
@@ -106,7 +106,7 @@ contract CrossChainPaymentProcessor is OwnerIsCreator {
         // Create an EVM2AnyMessage struct in memory with necessary information for sending a cross-chain message
         //  address(linkToken) means fees are paid in LINK
         Client.EVM2AnyMessage memory evm2AnyMessage = _buildCCIPMessage(
-            address(this),
+            subscription.serviceProvider,
             _token,
             subscription.amount,
             address(s_linkToken)
@@ -119,7 +119,7 @@ contract CrossChainPaymentProcessor is OwnerIsCreator {
         );
 
         if (fees > s_linkToken.balanceOf(subscription.user))
-            revert NotEnoughBalance(s_linkToken.balanceOf(address(msg.sender)), fees);
+            revert NotEnoughBalance(s_linkToken.balanceOf(subscription.user), fees);
 
         // approve the Router to transfer LINK tokens on contract's behalf. It will spend the fees in LINK
         s_linkToken.approve(address(s_router), fees);
@@ -137,15 +137,12 @@ contract CrossChainPaymentProcessor is OwnerIsCreator {
         emit TokensTransferred(
             messageId,
             subscription.preferredBlockchain,
-            address(this),
+            subscription.serviceProvider,
             _token,
             subscription.amount,
             address(s_linkToken),
             fees
         );
-
-        // Transfer token to serviceProvider
-        IERC20(_token).safeTransfer(subscription.serviceProvider, subscription.amount);
 
         // Emit an event for the payment being triggered
 		emit PaymentTriggered(
@@ -158,69 +155,69 @@ contract CrossChainPaymentProcessor is OwnerIsCreator {
         return messageId;
     }
 
-    /// @notice Transfer tokens to receiver on the destination chain.
-    /// @notice Pay in native gas such as ETH on Ethereum or MATIC on Polgon.
-    /// @notice the token must be in the list of supported tokens.
-    /// @notice This function can only be called by the owner.
-    /// @dev Assumes your contract has sufficient native gas like ETH on Ethereum or MATIC on Polygon.
-    /// @param _destinationChainSelector The identifier (aka selector) for the destination blockchain.
-    /// @param _receiver The address of the recipient on the destination blockchain.
-    /// @param _token token address.
-    /// @param _amount token amount.
-    /// @return messageId The ID of the message that was sent.
-    function transferTokensPayNative(
-        uint64 _destinationChainSelector,
-        address _receiver,
-        address _token,
-        uint256 _amount
-    )
-        internal
-        onlyOwner
-        onlyAllowlistedChain(_destinationChainSelector)
-        validateReceiver(_receiver)
-        returns (bytes32 messageId)
-    {
-        // Create an EVM2AnyMessage struct in memory with necessary information for sending a cross-chain message
-        // address(0) means fees are paid in native gas
-        Client.EVM2AnyMessage memory evm2AnyMessage = _buildCCIPMessage(
-            _receiver,
-            _token,
-            _amount,
-            address(0)
-        );
+    // /// @notice Transfer tokens to receiver on the destination chain.
+    // /// @notice Pay in native gas such as ETH on Ethereum or MATIC on Polgon.
+    // /// @notice the token must be in the list of supported tokens.
+    // /// @notice This function can only be called by the owner.
+    // /// @dev Assumes your contract has sufficient native gas like ETH on Ethereum or MATIC on Polygon.
+    // /// @param _destinationChainSelector The identifier (aka selector) for the destination blockchain.
+    // /// @param _receiver The address of the recipient on the destination blockchain.
+    // /// @param _token token address.
+    // /// @param _amount token amount.
+    // /// @return messageId The ID of the message that was sent.
+    // function transferTokensPayNative(
+    //     uint64 _destinationChainSelector,
+    //     address _receiver,
+    //     address _token,
+    //     uint256 _amount
+    // )
+    //     internal
+    //     onlyOwner
+    //     onlyAllowlistedChain(_destinationChainSelector)
+    //     validateReceiver(_receiver)
+    //     returns (bytes32 messageId)
+    // {
+    //     // Create an EVM2AnyMessage struct in memory with necessary information for sending a cross-chain message
+    //     // address(0) means fees are paid in native gas
+    //     Client.EVM2AnyMessage memory evm2AnyMessage = _buildCCIPMessage(
+    //         _receiver,
+    //         _token,
+    //         _amount,
+    //         address(0)
+    //     );
 
-        // Get the fee required to send the message
-        uint256 fees = s_router.getFee(
-            _destinationChainSelector,
-            evm2AnyMessage
-        );
+    //     // Get the fee required to send the message
+    //     uint256 fees = s_router.getFee(
+    //         _destinationChainSelector,
+    //         evm2AnyMessage
+    //     );
 
-        if (fees > address(this).balance)
-            revert NotEnoughBalance(address(this).balance, fees);
+    //     if (fees > address(this).balance)
+    //         revert NotEnoughBalance(address(this).balance, fees);
 
-        // approve the Router to spend tokens on contract's behalf. It will spend the amount of the given token
-        IERC20(_token).approve(address(s_router), _amount);
+    //     // approve the Router to spend tokens on contract's behalf. It will spend the amount of the given token
+    //     IERC20(_token).approve(address(s_router), _amount);
 
-        // Send the message through the router and store the returned message ID
-        messageId = s_router.ccipSend{value: fees}(
-            _destinationChainSelector,
-            evm2AnyMessage
-        );
+    //     // Send the message through the router and store the returned message ID
+    //     messageId = s_router.ccipSend{value: fees}(
+    //         _destinationChainSelector,
+    //         evm2AnyMessage
+    //     );
 
-        // Emit an event with message details
-        emit TokensTransferred(
-            messageId,
-            _destinationChainSelector,
-            _receiver,
-            _token,
-            _amount,
-            address(0),
-            fees
-        );
+    //     // Emit an event with message details
+    //     emit TokensTransferred(
+    //         messageId,
+    //         _destinationChainSelector,
+    //         _receiver,
+    //         _token,
+    //         _amount,
+    //         address(0),
+    //         fees
+    //     );
 
-        // Return the message ID
-        return messageId;
-    }
+    //     // Return the message ID
+    //     return messageId;
+    // }
 
     /// @notice Construct a CCIP message.
     /// @dev This function will create an EVM2AnyMessage struct with all the necessary information for tokens transfer.
