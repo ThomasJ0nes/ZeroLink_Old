@@ -1,14 +1,19 @@
 "use client";
 
 import React, { useState } from "react";
+import Actions from "./sections/Actions";
 import { ManageSubscriptions } from "./sections/ManageSubscriptions";
+import PaymentHistory from "./sections/PaymentHistory";
+import UserSettings from "./sections/UserSettings";
 import {
+  Activity,
   BarChart,
   Bell,
   ChevronDown,
   Clock,
   CreditCard,
   Edit,
+  History,
   Home,
   LogOut,
   Menu,
@@ -106,149 +111,17 @@ export default function Component() {
             </div>
 
             <div className="mt-8">
-              <Tabs defaultValue="subscriptions">
-                <TabsList>
-                  <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
-                  <TabsTrigger value="payments">Payments</TabsTrigger>
-                  <TabsTrigger value="history">Transaction History</TabsTrigger>
-                </TabsList>
-                <TabsContent value="subscriptions">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Manage Subscriptions</CardTitle>
-                      <CardDescription>Create, edit, or cancel your subscriptions</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <form>
-                        <div className="grid w-full items-center gap-4">
-                          <div className="flex flex-col space-y-1.5">
-                            <Label htmlFor="provider">Service Provider</Label>
-                            <Input id="provider" placeholder="Enter service provider" />
-                          </div>
-                          <div className="flex flex-col space-y-1.5">
-                            <Label htmlFor="amount">Amount</Label>
-                            <Input id="amount" placeholder="Enter amount" type="number" />
-                          </div>
-                          <div className="flex flex-col space-y-1.5">
-                            <Label htmlFor="interval">Payment Interval</Label>
-                            <Select>
-                              <SelectTrigger id="interval">
-                                <SelectValue placeholder="Select interval" />
-                              </SelectTrigger>
-                              <SelectContent position="popper">
-                                <SelectItem value="monthly">Monthly</SelectItem>
-                                <SelectItem value="quarterly">Quarterly</SelectItem>
-                                <SelectItem value="yearly">Yearly</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
-                      </form>
-                    </CardContent>
-                    <CardFooter className="flex justify-between">
-                      <Button variant="outline">Cancel</Button>
-                      <Button>Save</Button>
-                    </CardFooter>
-                  </Card>
-                </TabsContent>
-                <TabsContent value="payments">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Payment Processing</CardTitle>
-                      <CardDescription>Manage and process your payments</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <span>Netflix Subscription</span>
-                          <Button>
-                            <CreditCard className="mr-2 h-4 w-4" />
-                            Pay Now
-                          </Button>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span>Spotify Subscription</span>
-                          <Button variant="outline">
-                            <CreditCard className="mr-2 h-4 w-4" />
-                            Scheduled
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-                <TabsContent value="history">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Transaction History</CardTitle>
-                      <CardDescription>View your past transactions</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Date</TableHead>
-                            <TableHead>Service</TableHead>
-                            <TableHead>Amount</TableHead>
-                            <TableHead>Status</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          <TableRow>
-                            <TableCell>2023-06-15</TableCell>
-                            <TableCell>Netflix</TableCell>
-                            <TableCell>$14.99</TableCell>
-                            <TableCell>
-                              <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
-                                Completed
-                              </span>
-                            </TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell>2023-06-20</TableCell>
-                            <TableCell>Spotify</TableCell>
-                            <TableCell>$9.99</TableCell>
-                            <TableCell>
-                              <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
-                                Completed
-                              </span>
-                            </TableCell>
-                          </TableRow>
-                        </TableBody>
-                      </Table>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-              </Tabs>
+              <Actions />
             </div>
           </>
         );
       case "subscriptions":
         return <ManageSubscriptions />;
-      case "wallet":
-        return (
-          <Card>
-            <CardHeader>
-              <CardTitle>Wallet</CardTitle>
-              <CardDescription>Manage your wallet and balances</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span>Sepolia ETH Balance:</span>
-                  <span className="font-bold">2.5 ETH</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span>Optimism ETH Balance:</span>
-                  <span className="font-bold">1.8 ETH</span>
-                </div>
-                <Button className="w-full">
-                  <Plus className="mr-2 h-4 w-4" /> Add Funds
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        );
+
+      case "history":
+        return <PaymentHistory />;
+      case "settings":
+        return <UserSettings />;
       default:
         return null;
     }
@@ -277,6 +150,7 @@ export default function Component() {
                   <p>Dashboard</p>
                 </TooltipContent>
               </Tooltip>
+
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
@@ -295,16 +169,31 @@ export default function Component() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    variant={activePage === "wallet" ? "secondary" : "ghost"}
+                    variant={activePage === "history" ? "secondary" : "ghost"}
                     size="icon"
                     className="w-full"
-                    onClick={() => setActivePage("wallet")}
+                    onClick={() => setActivePage("history")}
                   >
-                    <Wallet className="h-5 w-5" />
+                    <History className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="right">
-                  <p>Wallet</p>
+                  <p>History</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={activePage === "settings" ? "secondary" : "ghost"}
+                    size="icon"
+                    className="w-full"
+                    onClick={() => setActivePage("settings")}
+                  >
+                    <Settings className="h-5 w-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p>Settings</p>
                 </TooltipContent>
               </Tooltip>
             </nav>
