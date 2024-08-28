@@ -48,7 +48,7 @@ export const Web3AuthProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       try {
         const web3authInstance = new Web3Auth({
           clientId,
-          web3AuthNetwork: "sapphire_mainnet",
+          web3AuthNetwork: "sapphire_devnet",
           privateKeyProvider,
         });
 

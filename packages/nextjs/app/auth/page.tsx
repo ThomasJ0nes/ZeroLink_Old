@@ -1,5 +1,7 @@
+"use client";
+
 import { useEffect } from "react";
-import { useWeb3Auth } from "../context/Web3AuthContext";
+import { useWeb3Auth } from "~~/context/Web3AuthContext";
 
 export default function AuthPage() {
   const { user, login, logout, getUserInfo } = useWeb3Auth();
