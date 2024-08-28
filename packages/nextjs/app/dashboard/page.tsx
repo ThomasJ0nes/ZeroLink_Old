@@ -5,25 +5,9 @@ import Actions from "./sections/Actions";
 import { ManageSubscriptions } from "./sections/ManageSubscriptions";
 import PaymentHistory from "./sections/PaymentHistory";
 import UserSettings from "./sections/UserSettings";
-import {
-  Activity,
-  BarChart,
-  Bell,
-  ChevronDown,
-  Clock,
-  CreditCard,
-  Edit,
-  History,
-  Home,
-  LogOut,
-  Menu,
-  Plus,
-  Settings,
-  User,
-  Wallet,
-} from "lucide-react";
+import { Bell, ChevronDown, Clock, History, Home, LogOut, Settings, User } from "lucide-react";
 import { Button } from "~~/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~~/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~~/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,11 +16,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~~/components/ui/dropdown-menu";
-import { Input } from "~~/components/ui/input";
-import { Label } from "~~/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~~/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~~/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~~/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "~~/components/ui/tooltip";
 
 export default function Component() {
