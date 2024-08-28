@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   ArrowRightIcon,
   CheckCircleIcon,
@@ -9,6 +10,8 @@ import {
 } from "lucide-react";
 import { Button } from "~~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~~/components/ui/card";
+
+// Import Link for navigation
 
 export default function Component() {
   return (
@@ -27,7 +30,9 @@ export default function Component() {
                 </p>
               </div>
               <div className="space-x-4">
-                <Button>Sign Up</Button>
+                <Link href="/auth" passHref>
+                  <Button>Sign Up</Button>
+                </Link>
                 <Button variant="outline">Subscriptions</Button>
               </div>
             </div>
@@ -152,10 +157,12 @@ export default function Component() {
                   Join our platform and experience the future of cross-chain subscription payments.
                 </p>
               </div>
-              <Button className="inline-flex items-center">
-                Get Started Now
-                <ArrowRightIcon className="ml-2 h-4 w-4" />
-              </Button>
+              <Link href="/auth" passHref>
+                <Button className="inline-flex items-center">
+                  Get Started Now
+                  <ArrowRightIcon className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
