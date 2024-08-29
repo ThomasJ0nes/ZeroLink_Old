@@ -7,7 +7,10 @@ const deployCrossChainPaymentProcessor: DeployFunction = async function (hre: Ha
 
   await deploy("CrossChainPaymentProcessor", {
     from: deployer,
-    args: ["0xF694E193200268f9a4868e4Aa017A0118C9a8177", "0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846"],
+    args: [
+      "0x114A20A10b43D4115e5aeef7345a1A71d2a60C57", // Optimism Sepolia
+      "0xE4aB69C077896252FAFBD49EFD26B5D171A32410", // LINK
+    ],
     log: true,
     autoMine: true,
   });
